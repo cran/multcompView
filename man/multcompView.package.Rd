@@ -13,13 +13,13 @@
   for which the difference exceeded a threshold.
 }
 \details{
-\tabular{ll}{
-Package: \tab multcompView\cr
-Type: \tab Package\cr
-Version: \tab 0.1-0\cr
-Date: \tab 2006-08-06\cr
-License: \tab GPL\cr
-}
+  \tabular{ll}{
+    Package: \tab multcompView\cr
+    Type: \tab Package\cr
+    Version: \tab 0.1-0\cr
+    Date: \tab 2006-08-06\cr
+    License: \tab GPL\cr
+  }
   Convert a logical vector or a vector of
   p-values or a difference or distance matrix into
   either a letter-based display using
@@ -36,7 +36,7 @@ License: \tab GPL\cr
   Spencer Graves and Hans-Peter Piepho with help
   from Sundar Dorai-Raj
 
-  Maintainer:  Spencer Graves <spencer.graves@pdf.com>
+  Maintainer:  Spencer Graves <spencer.graves@prodsyse.com>
 }
 \references{
   Piepho, Hans-Peter (2004) "An Algorithm for a

@@ -1,22 +1,32 @@
 \name{multcompLetters}
 \alias{multcompLetters}
+\alias{multcompLetters2}
+\alias{multcompLetters3}
+\alias{multcompLetters4}
 \title{
-  Letter summary of similarities and differences 
+  Letter summary of similarities and differences
 }
 \description{
-  Convert a logical vector or a vector of 
+  Convert a logical vector or a vector of
   p-values or a correlation or distance matrix into
-  a character-based display in which common 
+  a character-based display in which common
   characters identify levels or groups that are not
   significantly different.  Designed for use with
   the output of functions like TukeyHSD,
   dist{stats}, simint, simtest, csimint,
   csimtest{multcomp}, friedmanmc,
-  kruskalmc{pgirmess}.  
+  kruskalmc{pgirmess}.
 }
 \usage{
-  multcompLetters(x, compare, threshold=0.05,
-                   Letters=c(letters, LETTERS, "."))
+multcompLetters(x, compare="<", threshold=0.05,
+                Letters=c(letters, LETTERS, "."), 
+                reversed = FALSE)
+                
+multcompLetters2(formula, x, data, ...)
+
+multcompLetters3(z, y, x, data, ...)
+
+multcompLetters4(object, comp, ...)
 }
 \arguments{
   \item{x}{
@@ -30,14 +40,14 @@
     threshold)),  which by default converts numbers
     (typically p-values) less than 0.05 to TRUE and
     everything else to FALSE.  If x is a matrix, its
-    diagonal must be or must convert to FALSE.  
+    diagonal must be or must convert to FALSE.
   }
   \item{compare}{
     function or binary operator;  not
-    used if class(x) is "logical".  
+    used if class(x) is "logical".
   }
   \item{threshold}{
-    Second (reference) argument to "compare".  
+    Second (reference) argument to "compare".
   }
   \item{Letters}{
     Vector of distinct characters (or character
@@ -54,18 +64,45 @@
     last one will be "..a", etc.  (If the algorithm
     generates that many distinct groups, the display
     may be too busy to be useful, but the algorithm
-    shouldn't break.)  
+    shouldn't break.)
+  }
+  \item{reversed}{
+  A logical value indicating whether the order of 
+  the letters should be reversed. Defaults to FALSE.
+  }
+  \item{formula}{
+  The formula used to make the test (lm, aov, glm, etc.).
+  Like y ~ x.
+  }
+  \item{data}{
+  Data used to make the test.
+  }
+  \item{y}{
+  Value of the response variable.
+  }
+  \item{z}{
+  Categorical variables used in the test.
+  }
+  \item{object}{
+  An object of class aov or lm for the time being.
+  }
+  \item{comp}{
+  A object of class aov.
+  }
+  \item{...}{
+  Extra arguments passed to multcompLetters.
   }
 }
 \details{
   Produces a "Letter-Based Representation of All-
   Pairwise Comparisons" as described by Piepho
   (2004).  (The present algorithm does NOT perform
-  his "sweeping" step.) 
+  his "sweeping" step.)
+  \code{multcompLettersx} are wrapper of multcompLetters that will reorder the levels of the data so that the letters appear in a descending order of the mean. \code{mulcompletters3} is similar to \code{multcompletters2} except that it uses vector names to separte and the later has an formula interface. \code{multcompLetters4} will take a aov or lm object and a comparison test and will produce all the letters for the terms and interactions.
 }
 \value{
   An object of class 'multcompLetters', which is
-  a list with the following components:  
+  a list with the following components:
   \item{Letters }{character vector with names = the
     names of the levels or groups compared and with
     values = character strings in which common
@@ -79,7 +116,7 @@
     \item{monospacedLetters }{
       Same as "Letters" but with spaces so the
       individual grouping letters will line up
-      with a monspaced type font.  
+      with a monspaced type font.
     }
   \item{LetterMatrix }{Logical matrix with one row for
     each level compared and one column for each
@@ -87,22 +124,26 @@
     The output component "Letters" is obtained by
     concatonating the column names of all columns
     with TRUE in that row.
-    }  
+    }
+    multcompLetters4 will return a named list with the terms containing a object of class 'multcompLetters' as produced by \code{multcompLetters}.
 }
 \references{
   Piepho, Hans-Peter (2004) "An Algorithm for a Letter-Based
   Representation of All-Pairwise Comparisons", Journal of
   Computational and Graphical Statistics, 13(2)456-466.
 }
-\author{ Spencer Graves and Hans-Peter Piepho }
+\author{ Spencer Graves, Hans-Peter Piepho and Luciano Selzer}
 \seealso{
-  \code{\link{multcompBoxplot}} 
+  \code{\link{multcompBoxplot}}
   \code{\link{plot.multcompLetters}}
   \code{\link{print.multcompLetters}}
   \code{\link{multcompTs}}
   \code{\link{vec2mat}}
 }
 \examples{
+##
+## 1.  a logical vector indicating signficant differences
+##
 dif3 <- c(FALSE, FALSE, TRUE)
 names(dif3) <- c("A-B", "A-C", "B-C")
 dif3L <- multcompLetters(dif3)
@@ -110,6 +151,9 @@ dif3L
 print(dif3L)
 print(dif3L, TRUE)
 
+##
+## 2.  numeric vector indicating statistical significance
+##
 dif4 <- c(.01, .02, .03, 1)
 names(dif4) <- c("a-b", "a-c", "b-d", "a-d")
 (diff4.T <- multcompLetters(dif4))
@@ -120,9 +164,80 @@ names(dif4) <- c("a-b", "a-c", "b-d", "a-d")
 # but they should be recognizable when
 # concatonated.
 
+##
+## 3.  distance matrix
+##
+dJudge <- dist(USJudgeRatings)
+dJl <- multcompLetters(dJudge, compare='>', threshold = median(dJudge))
+# comparison of 43 judges;  compact but undecipherable:
+dJl
+
 x <- array(1:9, dim=c(3,3),
-   dimnames=list(NULL, LETTERS[1:3]))
+   dimnames=list(LETTERS[1:3], NULL) )
 d3 <- dist(x)
-multcompLetters(d3, threshold=2)
+dxLtrs <- multcompLetters(d3, compare=">", threshold=2)
+
+d3d <- dist(x, diag=TRUE)
+dxdLtrs <- multcompLetters(d3d, compare=">", threshold=2)
+
+\dontshow{stopifnot(}
+all.equal(dxLtrs, dxdLtrs)
+\dontshow{)}
+
+d3u <- dist(x, upper=TRUE)
+dxuLtrs <- multcompLetters(d3d, compare=">", threshold=2)
+
+\dontshow{stopifnot(}
+all.equal(dxLtrs, dxuLtrs)
+\dontshow{)}
+
+##
+## 4.  cor matrix
+##
+set.seed(4)
+x100 <- matrix(rnorm(100), ncol=5,
+               dimnames=list(NULL, LETTERS[1:5]) )
+cx <- cor(x100)
+cxLtrs <- multcompLetters(abs(cx), threshold=.3)
+
+
+##
+##5. reversed
+##
+
+dif3 <- c(FALSE, FALSE, TRUE)
+names(dif3) <- c("A-B", "A-C", "B-C")
+dif3L <- multcompLetters(dif3)
+dif3L.R <- multcompLetters(dif3, rev = TRUE)
+dif3L
+dif3L.R
+
+
+##
+##6. multcompletters2 usage
+
+experiment <- data.frame(treatments = gl(11, 20, labels = c("dtl", "ctrl", "treat1", 
+              "treat2", "treatA2", "treatB", "treatB2",
+              "treatC", "treatD", "treatA1", "treatX")),
+              y = c(rnorm(20, 10, 5), rnorm(20, 20, 5), rnorm(20, 22, 5), rnorm(20, 24, 5),
+               rnorm(20, 35, 5), rnorm(20, 37, 5), rnorm(20, 40, 5), rnorm(20, 43, 5),
+               rnorm(20, 45, 5), rnorm(20, 60, 5), rnorm(20, 60, 5)))
+exp_tukey <- TukeyHSD(exp_aov <- aov(y  ~ treatments, data = experiment))
+exp_letters1 <- multcompLetters(exp_tukey$treatments[,4])
+exp_letters1
+#Notice lowest mean treatments gets a "e"
+#Ordered letters
+multcompLetters2(y ~ treatments, exp_tukey$treatments[,"p adj"], experiment)
+multcompLetters2(y ~ treatments, exp_tukey$treatments[,"p adj"], experiment, reversed = TRUE)
+
+##7. multcompletters3 usage
+
+multcompLetters3("treatments", "y", exp_tukey$treatments[,"p adj"], experiment)
+
+##8. multcompletters4 usage
+
+
+multcompLetters4(exp_aov, exp_tukey)
+
 }
 \keyword{ dplot }
