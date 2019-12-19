@@ -23,8 +23,9 @@
 #' 
 #' extract_p(exp_tukey)
 #' 
-#' require(pgirmess)
+#' if(require(pgirmess)){
 #' extract_p(kruskalmc(y ~ treatments, data = experiment))
+#' }
 #' 
 #' 
 "extract_p" <- function(x) {
@@ -42,7 +43,7 @@ extract_p.default <- function(x){
 }
 
 #' @export
-#' @describeIn extract_p
+#' @describeIn extract_p extract p values from a TukeyHSD object
 
 extract_p.TukeyHSD <- function(x) {
    x <- lapply(x, extract_p.default)
